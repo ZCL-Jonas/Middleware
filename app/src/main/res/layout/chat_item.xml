@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rl_chat"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="@dimen/dp_10">
+
+    <LinearLayout
+        android:id="@+id/ll_left_hear"
+        android:layout_width="50dp"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/iv_left_hear"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@mipmap/ic_launcher"
+            android:paddingVertical="@dimen/dp_10"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/ll_left_hear"
+        android:layout_marginEnd="50dp"
+        android:background="#fff"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:text="楼兰"/>
+        <TextView
+            android:id="@+id/tv_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:gravity="start"
+            android:text="第一个。" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_right_hear"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true">
+        <ImageView
+            android:id="@+id/iv_right_hear"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@mipmap/ic_launcher"
+            android:paddingVertical="@dimen/dp_10"/>
+    </LinearLayout>
+
+</RelativeLayout>
