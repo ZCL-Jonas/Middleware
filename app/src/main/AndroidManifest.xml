@@ -15,22 +15,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/TranAppTheme">
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity">
+
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- <receiver android:name=".bluetooth.BleDeviceReceiver" -->
-        <!-- android:permission="android.permission.BLUETOOTH_PRIVILEGED"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.bluetooth.device.action.BOND_STATE_CHANGED"/> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
+        </activity>
+
+        <receiver
+            android:name=".bluetooth.BleDeviceReceiver"
+            android:permission="android.permission.BLUETOOTH_PRIVILEGED">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.BOND_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".service.MiddlewareService"
-            android:exported="true"></service>
+            android:exported="true">
+
+        </service>
     </application>
 
 </manifest>

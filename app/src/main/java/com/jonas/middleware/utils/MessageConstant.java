@@ -30,7 +30,18 @@ public class MessageConstant {
     public static final int MSG_GOT_A_CLIENT = 1004;
 
     /**
+     * bt socket closed
+     */
+    public static final int MSG_BT_SOCKET_CLOSED = 1005;
+
+    /**
      * 连接使用的uuid
      */
-    public static final UUID DEVICE_CONNECTION_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    public static final UUID DEVICE_CONNECTION_UUID = UUID.fromString("00001109-0000-1000-8000-00805F9B34FB");
+
+    /**
+     * 连接使用的uuid
+     */
+    public static final UUID DEVICE_SERVER_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
 }

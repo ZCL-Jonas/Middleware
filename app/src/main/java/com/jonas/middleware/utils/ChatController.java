@@ -33,6 +33,15 @@ public class ChatController {
         }
     }
 
+    public void release() {
+        if (mConnectThread != null) {
+            mConnectThread.release();
+        }
+        if (mAcceptThread != null) {
+            mAcceptThread.release();
+        }
+    }
+
     /**
      * 以下是单例写法
      */

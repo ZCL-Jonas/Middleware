@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.jonas.middleware.utils.MessageConstant;
@@ -13,14 +14,15 @@ import java.io.IOException;
 public class ConnectThread extends Thread {
     private static final String TAG = "ConnectThread";
     private final BluetoothAdapter mBluetoothAdapter;
-    private BleSocketRWThread mBleSocketRWThread;
+    private BluetoothDevice mBluetoothDevice;
+    private BTReadWriteThread mBTReadWriteThread;
     private BluetoothSocket mBluetoothSocket;
     private final Handler mHandler;
 
     public ConnectThread(BluetoothAdapter adapter, BluetoothDevice device, Handler handler) {
         mBluetoothAdapter = adapter;
         mHandler = handler;
-
+        mBluetoothDevice = device;
         BluetoothSocket mBleSocket = null;
 
         try {
@@ -57,10 +59,11 @@ public class ConnectThread extends Thread {
 
     private void manageConnectedSocket(BluetoothSocket mSocket) {
         // 通知主线程连接上了服务端socket，更新UI
-        mHandler.sendEmptyMessage(MessageConstant.MSG_CONNECTED_TO_SERVER);
+        Message message = mHandler.obtainMessage(MessageConstant.MSG_CONNECTED_TO_SERVER, mBluetoothDevice);
+        mHandler.sendMessage(message);
         // 新建一个线程进行通讯,不然会发现线程堵塞
-        mBleSocketRWThread = new BleSocketRWThread(mSocket, mHandler);
-        mBleSocketRWThread.start();
+        mBTReadWriteThread = new BTReadWriteThread(mSocket, mHandler);
+        mBTReadWriteThread.start();
     }
 
     /**
@@ -72,6 +75,11 @@ public class ConnectThread extends Thread {
                 mBluetoothSocket.close();
                 mBluetoothSocket = null;
             }
+            if (mBTReadWriteThread != null) {
+                mBTReadWriteThread.release();
+                mBTReadWriteThread.interrupt();
+                mBTReadWriteThread = null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,8 +90,8 @@ public class ConnectThread extends Thread {
      * @param data 数据
      */
     public void sendData (byte[] data) {
-        if (mBleSocketRWThread != null) {
-            mBleSocketRWThread.write(data);
+        if (mBTReadWriteThread != null) {
+            mBTReadWriteThread.write(data);
         }
     }
 }

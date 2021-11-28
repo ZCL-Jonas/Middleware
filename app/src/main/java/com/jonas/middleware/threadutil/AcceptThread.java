@@ -1,9 +1,11 @@
 package com.jonas.middleware.threadutil;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.jonas.middleware.utils.MessageConstant;
@@ -14,7 +16,7 @@ public class AcceptThread extends Thread {
     private static final String TAG = "AcceptThread";
     private String name = "BluetoothAccept";
     private BluetoothServerSocket mBluetoothServerSocket;
-    private BleSocketRWThread mBleSocketRWThread;
+    private BTReadWriteThread mBTReadWriteThread;
     private final Handler mHandler;
 
     public AcceptThread(BluetoothAdapter adapter, Handler handler) {
@@ -55,15 +57,16 @@ public class AcceptThread extends Thread {
     private void manageConnectSocket(BluetoothSocket socket) {
         // 只支持同时处理一个连接
         // mConnectedThread不为空,踢掉之前的客户端
-        if(mBleSocketRWThread != null) {
-            mBleSocketRWThread.release();
+        if(mBTReadWriteThread != null) {
+            mBTReadWriteThread.release();
         }
-
+        BluetoothDevice device = socket.getRemoteDevice();
         // 主线程更新UI,连接到了一个客户端
-        mHandler.sendEmptyMessage(MessageConstant.MSG_GOT_A_CLIENT);
+        Message message = mHandler.obtainMessage(MessageConstant.MSG_GOT_A_CLIENT, device);
+        mHandler.sendMessage(message);
         // 新建一个线程,处理客户端发来的数据
-        mBleSocketRWThread = new BleSocketRWThread(socket, mHandler);
-        mBleSocketRWThread.start();
+        mBTReadWriteThread = new BTReadWriteThread(socket, mHandler);
+        mBTReadWriteThread.start();
     }
 
     /**
@@ -75,6 +78,11 @@ public class AcceptThread extends Thread {
                 mBluetoothServerSocket.close();
                 mBluetoothServerSocket = null;
             }
+            if (mBTReadWriteThread != null) {
+                mBTReadWriteThread.release();
+                mBTReadWriteThread.interrupt();
+                mBTReadWriteThread = null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,8 +93,8 @@ public class AcceptThread extends Thread {
      * @param data 数据
      */
     public void sendData (byte[] data) {
-        if (mBleSocketRWThread != null) {
-            mBleSocketRWThread.write(data);
+        if (mBTReadWriteThread != null) {
+            mBTReadWriteThread.write(data);
         }
     }
 

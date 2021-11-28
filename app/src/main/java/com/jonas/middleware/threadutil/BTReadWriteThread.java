@@ -1,5 +1,6 @@
 package com.jonas.middleware.threadutil;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Message;
@@ -11,14 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class BleSocketRWThread extends Thread {
+public class BTReadWriteThread extends Thread {
     private static final String TAG = "BleSocketRWThread";
     private BluetoothSocket bleSocket;
     private final OutputStream mOutputStream;
     private final InputStream mInputStream;
     private final Handler mHandler;
 
-    public BleSocketRWThread(BluetoothSocket bleSocket, Handler mHandler) {
+    public BTReadWriteThread(BluetoothSocket bleSocket, Handler mHandler) {
         this.bleSocket = bleSocket;
         this.mHandler = mHandler;
 

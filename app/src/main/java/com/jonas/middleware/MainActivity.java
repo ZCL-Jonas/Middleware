@@ -11,12 +11,15 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -27,6 +30,7 @@ import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.jonas.middleware.adapter.DeviceAdapter;
+import com.jonas.middleware.service.MiddlewareService;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.lang.reflect.InvocationTargetException;
