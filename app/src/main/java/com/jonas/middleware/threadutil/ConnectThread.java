@@ -44,7 +44,9 @@ public class ConnectThread extends Thread {
             return;
         }
 
-        mBluetoothAdapter.cancelDiscovery();
+        if (mBluetoothAdapter.isDiscovering()) {
+            mBluetoothAdapter.cancelDiscovery();
+        }
         try {
             mBluetoothSocket.connect();
         } catch (IOException e) {
@@ -76,7 +78,6 @@ public class ConnectThread extends Thread {
                 mBluetoothSocket = null;
             }
             if (mBTReadWriteThread != null) {
-                mBTReadWriteThread.release();
                 mBTReadWriteThread.interrupt();
                 mBTReadWriteThread = null;
             }

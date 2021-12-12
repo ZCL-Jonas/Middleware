@@ -11,6 +11,8 @@ import android.util.Log;
 import com.jonas.middleware.utils.MessageConstant;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AcceptThread extends Thread {
     private static final String TAG = "AcceptThread";
@@ -58,15 +60,26 @@ public class AcceptThread extends Thread {
         // 只支持同时处理一个连接
         // mConnectedThread不为空,踢掉之前的客户端
         if(mBTReadWriteThread != null) {
-            mBTReadWriteThread.release();
+            mBTReadWriteThread.interrupt();
+            mBTReadWriteThread = null;
         }
         BluetoothDevice device = socket.getRemoteDevice();
+        addSocket(socket, device);
         // 主线程更新UI,连接到了一个客户端
         Message message = mHandler.obtainMessage(MessageConstant.MSG_GOT_A_CLIENT, device);
         mHandler.sendMessage(message);
         // 新建一个线程,处理客户端发来的数据
         mBTReadWriteThread = new BTReadWriteThread(socket, mHandler);
         mBTReadWriteThread.start();
+    }
+
+    private final Map<String, BluetoothSocket> socketMap = new HashMap<>();
+    private void addSocket(BluetoothSocket socket, BluetoothDevice device) {
+        if (socketMap.containsKey(device.getAddress())) {
+            socketMap.replace(device.getAddress(), socket);
+        } else  {
+            socketMap.put(device.getAddress(), socket);
+        }
     }
 
     /**
@@ -79,7 +92,6 @@ public class AcceptThread extends Thread {
                 mBluetoothServerSocket = null;
             }
             if (mBTReadWriteThread != null) {
-                mBTReadWriteThread.release();
                 mBTReadWriteThread.interrupt();
                 mBTReadWriteThread = null;
             }

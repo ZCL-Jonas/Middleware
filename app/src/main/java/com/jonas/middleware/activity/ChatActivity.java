@@ -1,4 +1,4 @@
-package com.jonas.middleware;
+package com.jonas.middleware.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.jonas.middleware.R;
 import com.jonas.middleware.adapter.ChatAdapter;
 import com.jonas.middleware.bean.UserBean;
 import com.jonas.middleware.service.MiddlewareService;
@@ -64,11 +65,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         String mac = getIntent().getStringExtra("address");
         mBluetoothDevice = getBoundDevice(mac).orElse(null);
-//        if (mBluetoothDevice != null && mBluetoothAdapter != null) {
-//            ChatController.getInstance().waitingFriends(mBluetoothAdapter, myHandler);
-//        }
-        Intent intent = new Intent(this, MiddlewareService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if (mBluetoothDevice != null && mBluetoothAdapter != null) {
+            ChatController.getInstance().startChatWith(mBluetoothAdapter, mBluetoothDevice, myHandler);
+        }
+//        Intent intent = new Intent(this, MiddlewareService.class);
+//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -139,9 +140,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     UserBean userBean = getUserBean(text, "", ChatAdapter.USER_TYPE_OWN);
                     users.add(userBean);
                     mChatAdapter.changeBondDevice();
-//                    ChatController.getInstance().writeMessage(text);
+                    ChatController.getInstance().writeMessage(text);
                     etInput.setText("");
-                    mMiddlewareService.sendMessage(text);
+//                    mMiddlewareService.sendMessage(text);
                 } else {
                     showMsg("不能发送空消息");
                 }
@@ -162,7 +163,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(serviceConnection);// 解除绑定，断开连接
+//        unbindService(serviceConnection);// 解除绑定，断开连接
+        ChatController.getInstance().release();
         if (myHandler != null) {
             myHandler.removeCallbacksAndMessages(null);
         }

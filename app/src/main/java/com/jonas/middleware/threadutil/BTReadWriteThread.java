@@ -22,7 +22,6 @@ public class BTReadWriteThread extends Thread {
     public BTReadWriteThread(BluetoothSocket bleSocket, Handler mHandler) {
         this.bleSocket = bleSocket;
         this.mHandler = mHandler;
-
         OutputStream output = null;
         InputStream input = null;
         try {
@@ -40,32 +39,20 @@ public class BTReadWriteThread extends Thread {
     public void run() {
         super.run();
         byte[] buffer = new byte[1024];
-        while (true) {
+        int bufferSize = 0;
+        while (bleSocket != null && bleSocket.isConnected() && !isInterrupted()) {
             try {
-                int bufferSize = mInputStream.read(buffer);
+                bufferSize = mInputStream.read(buffer);
                 if (bufferSize > 0) {
                     String data = new String(buffer, 0, bufferSize, "utf-8");
                     Message message = mHandler.obtainMessage(MessageConstant.MSG_READ_DATA, data);
                     mHandler.sendMessage(message);
                 }
                 Log.e(TAG, "message size :" + bufferSize);
+                bufferSize = 0;
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "read error ret :" + bufferSize);
             }
-        }
-    }
-
-    /**
-     * 释放资源
-     */
-    public void release() {
-        try {
-            if (bleSocket != null) {
-                bleSocket.close();
-                bleSocket = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
